@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 auto Canvas</title>
+</head>
+<body>
+<canvas id="draw" width="800" height="800"></canvas>
+<script>
+    const canvas = document.querySelector('#draw');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    ctx.strokeStyle = '#BADASS';
+    ctx.lineJoin = 'round';
+    ctx.lineCap = 'round';
+    ctx.lineWidth = 50;
+
+    let isDrawing = false;
+    let lastX = 0;
+    let lastY = 0;
+    let hue = 0;
+    let direction = true;
+
+    var repeater;
+    function drawAuto(e) {
+        //if(!isDrawing) return; //stop the function from running when they are not moused down
+        ctx.strokeStyle = `hsl(${hue}, 100%, 50%)`;
+        /*
+        var moveX = lastX + (Math.floor(Math.random() * 100)-45)/2;
+        var moveY = lastY + (Math.floor(Math.random() * 100)-45)/2;
+        */
+        var speedX = (Math.floor(Math.random() * 100)-50)/4;
+        var speedY = (Math.floor(Math.random() * 100)-50)/4;
+        if (lastX >= window.innerWidth-5){
+            speedX = -Math.abs(speedX);
+        } else if (lastX <= 5) {
+            speedX = Math.abs(speedX);
+        } else if (lastY >= window.innerHeight-5){
+            speedY = -Math.abs(speedY);
+        } else if (lastY <= 5) {
+            speedY = Math.abs(speedY);
+        };
+
+        var moveX = lastX + speedX*(Math.floor(Math.random() * 10));
+        var moveY = lastY + speedY*(Math.floor(Math.random() * 10));
+
+        
+        ctx.beginPath();
+        ctx.moveTo(lastX, lastY);
+        ctx.lineTo(moveX, moveY);
+        ctx.stroke();
+        [lastX, lastY] = [moveX, moveY];
+
+        //lastX = e.offsetX;
+        //lastY = e.offsetY;
+        //console.log([moveX]);
+        //console.log({moveY});
+        //console.log({moveY});
+
+        hue++;
+        if (hue >= 360){
+            hue = 0;
+        }
+        if (ctx.lineWidth >= 50 || ctx.lineWidth <= 1){
+            direction = !direction;
+        }
+
+        if (direction) {
+            ctx.lineWidth++;
+        } else {
+            ctx.lineWidth--;
+        }
+        
+        repeater = setTimeout(drawAuto, 50);
+    };
+
+    //canvas.addEventListener('mousemove', drawAuto);
+    //window.serInterval(drawAuto, 10000);
+    
+    [lastX, lastY] = [Math.floor((window.innerWidth)/2), Math.floor((window.innerHeight)/2)];
+    document.addEventListener('DOMContentLoaded', drawAuto);
+
+    canvas.addEventListener('mousedown', (e) => {
+        isDrawing = true;
+        [lastX, lastY] = [e.offsetX, e.offsetY];
+    });
+
+    //canvas.addEventListener('mouseup', () => isDrawing = false);
+    //canvas.addEventListener('mouseout', () => isDrawing = false);
+    canvas.addEventListener('mouseup', () => isDrawing = true);
+    canvas.addEventListener('mouseout', () => isDrawing = true);
+
+</script>
+
+<style>
+  html, body {
+    margin: 0;
+  }
+</style>
+</body>
+</html>
